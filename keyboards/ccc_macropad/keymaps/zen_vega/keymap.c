@@ -5,7 +5,7 @@
 #include QMK_KEYBOARD_H
 
 #define SLIDER_PIN 26
-#define SLIDER_SENSITIVITY 128
+#define SLIDER_SENSITIVITY 12
 
 static int16_t last_val = -1;
 
