@@ -14,7 +14,7 @@
   },
   "matrix_pins": {
     "rows": ["GP0", "GP1"],
-    "cols": ["GP2", "GP3", "GP4"]
+    "cols": ["GP2", "GP4"]
   },
   "drivers": {
     "analog": "pal"
