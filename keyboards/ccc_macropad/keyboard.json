@@ -20,7 +20,7 @@
     "analog": "pal"
   },
   "analog": {
-    "pins": ["GP26"]
+    "pins": ["GP3"]
   },
   "url": "",
   "usb": {
