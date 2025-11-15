@@ -7,7 +7,7 @@
 // ----------------------
 // Slider setup
 // ----------------------
-#define SLIDER_PIN 29
+#define SLIDER_PIN 26
 #define MAX_VOLUME_STEPS 100
 #define SLIDER_DEADBAND 2 // ignore <2 steps of change
 static bool     volume_init_done = false;

@@ -37,7 +37,7 @@ static uint32_t last_tab_time = 0;
 // ----------------------
 // Keymap
 // ----------------------
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[BASE_LAYER] = LAYOUT(KC_LEFT, KC_ENTER, KC_RIGHT, KC_X)};
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[BASE_LAYER] = LAYOUT(KC_ENTER, KC_LEFT, KC_RIGHT, KC_X)};
 
 // ----------------------
 // Called once at boot
