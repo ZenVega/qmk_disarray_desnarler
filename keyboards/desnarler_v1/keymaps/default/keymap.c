@@ -7,8 +7,8 @@
 // ----------------------
 // Slider setup
 // ----------------------
-#define SLIDER_PIN 26
-#define MAX_VOLUME_STEPS 20
+#define SLIDER_PIN 29
+#define MAX_VOLUME_STEPS 100
 #define SLIDER_DEADBAND 2 // ignore <2 steps of change
 static bool     volume_init_done = false;
 static bool     slider_ready     = false;
@@ -19,9 +19,9 @@ static int16_t  last_val         = 0;
 // ----------------------
 // LEDs
 // ----------------------
-#define LED1_PIN 29 // left LED
-#define LED2_PIN 27
-#define LED3_PIN 28 // right LED
+#define LED1_PIN 28 
+#define LED2_PIN 26
+#define LED3_PIN 27 // right LED
 
 // ----------------------
 // OS Switch
@@ -48,13 +48,13 @@ static uint32_t last_tab_time = 0;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     // --- Linux layers 0–4 ---
-    [0] = LAYOUT(KC_ENTER, KC_DOWN, KC_X, KC_ENTER),
+    [0] = LAYOUT(MO(1), MO(2), LGUI(LALT(KC_LEFT)), LGUI(LALT(KC_RIGHT))),
     [1] = LAYOUT(_______, MO(2), LGUI(LSFT(LALT(KC_LEFT))), LGUI(LSFT(LALT(KC_RIGHT)))),
     [2] = LAYOUT(MO(1), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
     [3] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP),
 
     // --- macOS layers 4–7 ---
-    [4] = LAYOUT(KC_ENTER, KC_DOWN, KC_X, KC_ENTER),
+    [4] = LAYOUT(MO(5), MO(6), LCTL(KC_LEFT), LCTL(KC_RIGHT)),
     [5] = LAYOUT(_______, MO(6), LCTL(LSFT(KC_LEFT)), LCTL(LSFT(KC_RIGHT))),
     [6] = LAYOUT(MO(5), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
     [7] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP)};
@@ -171,10 +171,10 @@ void matrix_scan_user(void) {
 
     if (target > last_val) {
         for (int i = last_val; i < target; i++)
-            tap_code(KC_RIGHT);
+            tap_code(KC_AUDIO_VOL_UP);
     } else {
         for (int i = target; i < last_val; i++)
-            tap_code(KC_LEFT);
+            tap_code(KC_AUDIO_VOL_DOWN);
     }
     last_val = target;
 }

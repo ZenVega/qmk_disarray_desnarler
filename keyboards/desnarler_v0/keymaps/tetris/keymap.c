@@ -7,7 +7,7 @@
 #define SLIDER_PIN 26
 #define MAX_SLIDER_STEPS 100
 #define SLIDER_DEADBAND 2 // ignore <2 steps of change
-static int16_t last_val = 0;
+//static int16_t last_val = 0;
 
 // ----------------------
 // Button setup (GP3 as Enter)
@@ -37,7 +37,7 @@ static uint32_t last_tab_time = 0;
 // ----------------------
 // Keymap
 // ----------------------
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[BASE_LAYER] = LAYOUT(KC_LEFT, KC_DOWN, KC_RIGHT, KC_X)};
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[BASE_LAYER] = LAYOUT(KC_LEFT, KC_ENTER, KC_RIGHT, KC_X)};
 
 // ----------------------
 // Called once at boot
@@ -98,7 +98,7 @@ void matrix_scan_user(void) {
         unregister_mods(MOD_BIT(KC_LGUI));
         gui_held = false;
     }
-
+/*
     // ------ Slider processing ------
     int16_t raw    = analogReadPin(SLIDER_PIN);
     int     target = (int)(raw * MAX_SLIDER_STEPS / 4095.0f);
@@ -120,6 +120,7 @@ void matrix_scan_user(void) {
     }
 
     last_val = target;
+*/
 }
 
 // ----------------------
