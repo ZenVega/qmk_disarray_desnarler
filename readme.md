@@ -1,3 +1,9 @@
+this is a fork of the QMK firmware
+
+it also contains the files necessary for the DisArray Desnarler Keyboard
+
+if your want to learn more about the Desnarler and find instructions how to set it up and use it refer to: [repo](https://github.com/ZenVega/disarray_desnarler_docs)
+
 # Quantum Mechanical Keyboard Firmware
 
 [![Current Version](https://img.shields.io/github/tag/qmk/qmk_firmware.svg)](https://github.com/qmk/qmk_firmware/tags)
