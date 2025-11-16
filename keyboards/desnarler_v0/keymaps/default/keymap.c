@@ -27,7 +27,7 @@ static int16_t  last_val         = 0;
 // OS Switch
 // ----------------------
 #define OS_SWITCH_PIN GP3
-static bool switch_onb = false;
+static bool switch_on = false;
 
 // ----------------------
 // helpers to hold tab

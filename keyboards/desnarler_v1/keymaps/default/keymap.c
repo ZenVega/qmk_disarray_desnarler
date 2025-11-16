@@ -7,7 +7,7 @@
 // ----------------------
 // Slider setup
 // ----------------------
-#define SLIDER_PIN 26
+#define SLIDER_PIN 29
 #define MAX_VOLUME_STEPS 100
 #define SLIDER_DEADBAND 2 // ignore <2 steps of change
 static bool     volume_init_done = false;
@@ -19,8 +19,8 @@ static int16_t  last_val         = 0;
 // ----------------------
 // LEDs
 // ----------------------
-#define LED1_PIN 28 
-#define LED2_PIN 26
+#define LED1_PIN 26 //left
+#define LED2_PIN 28
 #define LED3_PIN 27 // right LED
 
 // ----------------------
