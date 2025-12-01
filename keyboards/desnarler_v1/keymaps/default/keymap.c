@@ -7,21 +7,19 @@
 // ----------------------
 // Slider setup
 // ----------------------
-#define SLIDER_PIN 29
+#define SLIDER_PIN 26
 #define MAX_VOLUME_STEPS 100
 #define SLIDER_DEADBAND 2 // ignore <2 steps of change
-static bool     volume_init_done = false;
-static bool     slider_ready     = false;
-static uint32_t slider_timer     = 0;
-static uint32_t init_timer       = 0;
-static int16_t  last_val         = 0;
+
+static uint32_t last_vol_change = 0;
+static bool slider_ready = false;
 
 // ----------------------
 // LEDs
 // ----------------------
-#define LED1_PIN 26 //left
-#define LED2_PIN 28
-#define LED3_PIN 27 // right LED
+#define LED1_PIN 29 // left LED
+#define LED2_PIN 27
+#define LED3_PIN 28 // right LED
 
 // ----------------------
 // OS Switch
@@ -57,21 +55,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [4] = LAYOUT(MO(5), MO(6), LCTL(KC_LEFT), LCTL(KC_RIGHT)),
     [5] = LAYOUT(_______, MO(6), LCTL(LSFT(KC_LEFT)), LCTL(LSFT(KC_RIGHT))),
     [6] = LAYOUT(MO(5), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
-    [7] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP)};
+    [7] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP)
+};
 
-// ----------------------
-// Called once at boot
-// ----------------------
-void matrix_init_user(void) {
-    // Initialize OS Switch
-    setPinInputHigh(OS_SWITCH_PIN);
 
-    // Initialize LEDs
-    setPinOutput(LED1_PIN);
-    setPinOutput(LED2_PIN);
-    setPinOutput(LED3_PIN);
-
-    // initial happy blinking
+void initial_blink(void){
     for (int i = 0; i < 10; i++) {
         writePinHigh(LED1_PIN);
         writePinLow(LED2_PIN);
@@ -83,6 +71,22 @@ void matrix_init_user(void) {
         wait_ms(200);
     }
     writePinLow(LED2_PIN);
+}
+
+// ----------------------
+// Called once at boot
+// ----------------------
+
+void matrix_init_user(void) {
+    // Initialize OS Switch
+    setPinInputHigh(OS_SWITCH_PIN);
+
+    // Initialize LEDs
+    setPinOutput(LED1_PIN);
+    setPinOutput(LED2_PIN);
+    setPinOutput(LED3_PIN);
+
+    initial_blink();    
 }
 
 // ----------------------
@@ -118,7 +122,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             writePinHigh(LED3_PIN);
             break;
     }
-
     return state;
 }
 
@@ -140,54 +143,36 @@ void matrix_scan_user(void) {
         gui_held = false;
     }
 
-    // ------ volume init ------
-    if (!volume_init_done) {
-        if (!init_timer) init_timer = timer_read32();
-        if (timer_elapsed32(init_timer) > 800) {
-            for (int i = 0; i < 50; i++)
-                tap_code_delay(KC_VOLD, 5);
-            last_val         = 0;
-            volume_init_done = true;
-            slider_timer     = timer_read32();
-        }
-        return;
+    // start slider once
+    if (!slider_ready){
+        last_vol_change = timer_read32();
+        slider_ready = true;
+        return ;
     }
-
-    // ------ slider ready delay ------
-    if (!slider_ready) {
-        if (timer_elapsed32(slider_timer) > 500)
-            slider_ready = true;
-        else
-            return;
-    }
-
+    
     // ------ slider processing ------
-    int16_t raw    = analogReadPin(SLIDER_PIN);
-    int     target = (int)(raw * MAX_VOLUME_STEPS / 4095.0f);
-    if (target < 0) target = 0;
-    if (target > MAX_VOLUME_STEPS) target = MAX_VOLUME_STEPS;
+    const int16_t center = 512;
+    const int16_t dead_zone = 70;
+    
 
-    if (abs(target - last_val) <= SLIDER_DEADBAND) return; // noise filter
-
-    if (target > last_val) {
-        for (int i = last_val; i < target; i++)
-            tap_code(KC_AUDIO_VOL_UP);
-    } else {
-        for (int i = target; i < last_val; i++)
-            tap_code(KC_AUDIO_VOL_DOWN);
+    int16_t raw = analogReadPin(SLIDER_PIN);
+    if (timer_elapsed(last_vol_change) < 100){
+        return ;
     }
-    last_val = target;
+   
+    if (raw < center - dead_zone){
+        tap_code(KC_AUDIO_VOL_DOWN);
+        last_vol_change = timer_read32();
+    }
+    else if (raw > center + dead_zone){
+        tap_code(KC_AUDIO_VOL_UP);
+        last_vol_change = timer_read32();
+    }
+
 }
 
-// ----------------------
-// Called on every keypress
-// ----------------------
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!record->event.pressed) return true;
-
-    // Sleep animation
-    if (keycode == KC_SYSTEM_SLEEP) {
-        for (uint8_t i = 0; i < 5; i++) {
+void    sleep_animation(void){
+    for (uint8_t i = 0; i < 5; i++) {
             writePinHigh(LED1_PIN);
             writePinHigh(LED2_PIN);
             writePinHigh(LED3_PIN);
@@ -197,6 +182,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             writePinLow(LED3_PIN);
             wait_ms(200);
         }
+}
+// ----------------------
+// Called on every keypress
+// ----------------------
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (!record->event.pressed) return true;
+
+    // Sleep animation
+    if (keycode == KC_SYSTEM_SLEEP) {
+        sleep_animation();
         return false;
     }
 
@@ -220,6 +215,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             last_tab_time = timer_read32();
             return false;
         }
-    }
+    }  
     return true;
 }
