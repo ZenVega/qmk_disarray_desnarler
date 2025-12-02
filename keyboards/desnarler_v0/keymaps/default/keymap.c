@@ -11,6 +11,8 @@
 
 static uint32_t last_vol_change = 0;
 static bool slider_ready = false;
+const int16_t center = 512;
+const int16_t dead_zone = 70;
 
 // ----------------------
 // LEDs
@@ -74,7 +76,6 @@ void initial_blink(void){
 // ----------------------
 // Called once at boot
 // ----------------------
-
 void matrix_init_user(void) {
     // Initialize OS Switch
     setPinInputHigh(OS_SWITCH_PIN);
@@ -95,7 +96,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     uint8_t layer = get_highest_layer(state);
 
-    // LEDs
     writePinLow(LED1_PIN);
     writePinLow(LED2_PIN);
     writePinLow(LED3_PIN);
@@ -141,18 +141,14 @@ void matrix_scan_user(void) {
         gui_held = false;
     }
 
-    // start slider once
+    // ------ start slider once -------
     if (!slider_ready){
         last_vol_change = timer_read32();
         slider_ready = true;
         return ;
     }
     
-    // ------ slider processing ------
-    const int16_t center = 512;
-    const int16_t dead_zone = 70;
-    
-
+    // ------ read slider value, cap frequency ------
     int16_t raw = analogReadPin(SLIDER_PIN);
     if (timer_elapsed(last_vol_change) < 100){
         return ;
@@ -166,32 +162,15 @@ void matrix_scan_user(void) {
         tap_code(KC_AUDIO_VOL_UP);
         last_vol_change = timer_read32();
     }
-
 }
 
-void    sleep_animation(void){
-    for (uint8_t i = 0; i < 5; i++) {
-            writePinHigh(LED1_PIN);
-            writePinHigh(LED2_PIN);
-            writePinHigh(LED3_PIN);
-            wait_ms(200);
-            writePinLow(LED1_PIN);
-            writePinLow(LED2_PIN);
-            writePinLow(LED3_PIN);
-            wait_ms(200);
-        }
-}
 // ----------------------
 // Called on every keypress
 // ----------------------
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!record->event.pressed) return true;
-
-        // // Sleep animation
-        // if (keycode == KC_SYSTEM_SLEEP) {
-        //     sleep_animation();
-        //     return false;
-        // }
+    //if nothing to register, just return
+    if (!record->event.pressed)
+        return true;
 
     // Custom keys
     switch (keycode) {
@@ -204,7 +183,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
 
             if (keycode == LGUI(KC_TAB))
-                tap_code(KC_TAB); // forward
+                tap_code(KC_TAB);
             else {
                 register_mods(MOD_BIT(KC_LSFT)); // hold Shift
                 tap_code(KC_TAB);
