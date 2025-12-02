@@ -93,6 +93,7 @@ void matrix_init_user(void) {
 // ----------------------
 layer_state_t layer_state_set_user(layer_state_t state) {
     state = update_tri_layer_state(state, 1, 2, 3);
+    state = update_tri_layer_state(state, 5, 6, 7);
 
     uint8_t layer = get_highest_layer(state);
 
