@@ -8,8 +8,6 @@
 // Slider setup
 // ----------------------
 #define SLIDER_PIN 26
-#define MAX_VOLUME_STEPS 100
-#define SLIDER_DEADBAND 2 // ignore <2 steps of change
 
 static uint32_t last_vol_change = 0;
 static bool slider_ready = false;
@@ -189,11 +187,11 @@ void    sleep_animation(void){
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) return true;
 
-    // Sleep animation
-    if (keycode == KC_SYSTEM_SLEEP) {
-        sleep_animation();
-        return false;
-    }
+        // // Sleep animation
+        // if (keycode == KC_SYSTEM_SLEEP) {
+        //     sleep_animation();
+        //     return false;
+        // }
 
     // Custom keys
     switch (keycode) {

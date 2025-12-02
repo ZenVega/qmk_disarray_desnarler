@@ -7,9 +7,7 @@
 // ----------------------
 // Slider setup
 // ----------------------
-#define SLIDER_PIN 26
-#define MAX_VOLUME_STEPS 100
-#define SLIDER_DEADBAND 2 // ignore <2 steps of change
+#define SLIDER_PIN 29
 
 static uint32_t last_vol_change = 0;
 static bool slider_ready = false;
@@ -17,9 +15,9 @@ static bool slider_ready = false;
 // ----------------------
 // LEDs
 // ----------------------
-#define LED1_PIN 29 // left LED
-#define LED2_PIN 27
-#define LED3_PIN 28 // right LED
+#define LED1_PIN 26 // left LED
+#define LED2_PIN 28
+#define LED3_PIN 27 // right LED
 
 // ----------------------
 // OS Switch
@@ -49,15 +47,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT(MO(1), MO(2), LGUI(LALT(KC_LEFT)), LGUI(LALT(KC_RIGHT))),
     [1] = LAYOUT(_______, MO(2), LGUI(LSFT(LALT(KC_LEFT))), LGUI(LSFT(LALT(KC_RIGHT)))),
     [2] = LAYOUT(MO(1), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
-    [3] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP),
+    [3] = LAYOUT(_______, _______, KC_SYSTEM_POWER, KC_SYSTEM_POWER),
 
     // --- macOS layers 4–7 ---
     [4] = LAYOUT(MO(5), MO(6), LCTL(KC_LEFT), LCTL(KC_RIGHT)),
     [5] = LAYOUT(_______, MO(6), LCTL(LSFT(KC_LEFT)), LCTL(LSFT(KC_RIGHT))),
     [6] = LAYOUT(MO(5), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
-    [7] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP)
+    [7] = LAYOUT(_______, _______, KC_SYSTEM_POWER, KC_SYSTEM_POWER)
 };
-
 
 void initial_blink(void){
     for (int i = 0; i < 10; i++) {
@@ -86,7 +83,7 @@ void matrix_init_user(void) {
     setPinOutput(LED2_PIN);
     setPinOutput(LED3_PIN);
 
-    initial_blink();    
+    initial_blink();
 }
 
 // ----------------------
@@ -129,6 +126,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 // matrix_scan_user: repeated loop
 // ----------------------
 void matrix_scan_user(void) {
+    
     // ------ OS_Switch: select OS layer set ------
     bool new_mode = !readPin(OS_SWITCH_PIN); // HIGH = macOS, LOW = Linux
     if (new_mode != switch_on) {
@@ -168,7 +166,6 @@ void matrix_scan_user(void) {
         tap_code(KC_AUDIO_VOL_UP);
         last_vol_change = timer_read32();
     }
-
 }
 
 void    sleep_animation(void){
@@ -183,6 +180,7 @@ void    sleep_animation(void){
             wait_ms(200);
         }
 }
+
 // ----------------------
 // Called on every keypress
 // ----------------------
@@ -190,10 +188,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) return true;
 
     // Sleep animation
-    if (keycode == KC_SYSTEM_SLEEP) {
-        sleep_animation();
-        return false;
-    }
+    // if (keycode == KC_SYSTEM_SLEEP) {
+    //     sleep_animation();
+    //     return false;
+    // }
 
     // Custom keys
     switch (keycode) {
