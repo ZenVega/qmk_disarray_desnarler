@@ -40,6 +40,14 @@ static uint32_t last_tab_time = 0;
 #define BASE_LAYER_1 0
 #define BASE_LAYER_2 4
 
+// custom keys
+enum custom_keycodes {
+    AUML = SAFE_RANGE,
+    OUML,
+    UUML,
+    SSCHAR
+};
+
 // ----------------------
 // Keymap
 // ----------------------
@@ -51,11 +59,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [2] = LAYOUT(MO(1), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
     [3] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP),
 
-    // --- macOS layers 4–7 ---
-    [4] = LAYOUT(MO(5), MO(6), LCTL(KC_LEFT), LCTL(KC_RIGHT)),
-    [5] = LAYOUT(_______, MO(6), LCTL(LSFT(KC_LEFT)), LCTL(LSFT(KC_RIGHT))),
-    [6] = LAYOUT(MO(5), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
-    [7] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP)
+    // --- Umlaut Layer
+    [4] = LAYOUT(
+    AUML, OUML,
+    UUML, SSCHAR
+)
+
 };
 
 void initial_blink(void){
@@ -174,8 +183,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed)
         return true;
 
+    // Umlauts
+    switch (keycode) {
+        case AUML: send_unicode_string("00E4"); return false;
+        case OUML: send_unicode_string("00F6"); return false;
+        case UUML: send_unicode_string("00FC"); return false;
+        case SSCHAR: send_unicode_string("00DF"); return false;
+    }
     // holding tab
-switch (keycode) {
+    switch (keycode) {
         case LGUI(KC_TAB):
         case LGUI(LSFT(KC_TAB)): {
             if (!gui_held) {
