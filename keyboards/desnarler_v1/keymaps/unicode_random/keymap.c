@@ -27,12 +27,6 @@ const int16_t dead_zone = 70;
 #define OS_SWITCH_PIN GP0
 static bool switch_on = false;
 
-// ----------------------
-// helpers to hold tab
-// ----------------------
-static bool     gui_held      = false;
-static uint32_t last_tab_time = 0;
-#define GUI_HOLD_TIMEOUT 1000 // ms
 
 // ----------------------
 // Layer definitions
@@ -42,10 +36,14 @@ static uint32_t last_tab_time = 0;
 
 // custom keys
 enum custom_keycodes {
-    AUML = SAFE_RANGE,
-    OUML,
-    UUML,
-    DSCHAR
+    K0 = SAFE_RANGE,
+    K1,
+    K2,
+    K3,
+    K4,
+    K5,
+    K6,
+    K7
 };
 
 // ----------------------
@@ -53,14 +51,12 @@ enum custom_keycodes {
 // ----------------------
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-    // --- Linux layers 0–4 ---
-    [0] = LAYOUT(MO(1), MO(2), LGUI(LALT(KC_LEFT)), LGUI(LALT(KC_RIGHT))),
-    [1] = LAYOUT(MO(1), MO(2), LGUI(LSFT(LALT(KC_LEFT))), LGUI(LSFT(LALT(KC_RIGHT)))),
-    [2] = LAYOUT(MO(1), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
-    [3] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP),
+    // --- switch to left
+    [0] = LAYOUT(K0, K1, K2, K3),
 
-    // --- Umlaut Layer
-    [4] = LAYOUT(AUML, OUML, UUML, DSCHAR)
+    // --- switch to right
+    [4] = LAYOUT(K4, K5, K6, K7)
+
 };
 
 void initial_blink(void){
@@ -93,59 +89,15 @@ void matrix_init_user(void) {
 }
 
 // ----------------------
-// Called when layer changes
-// ----------------------
-layer_state_t layer_state_set_user(layer_state_t state) {
-    state = update_tri_layer_state(state, 1, 2, 3);
-    state = update_tri_layer_state(state, 5, 6, 7);
-
-    uint8_t layer = get_highest_layer(state);
-
-    // LEDs
-    writePinLow(LED1_PIN);
-    writePinLow(LED2_PIN);
-    writePinLow(LED3_PIN);
-
-    switch (layer) {
-        case 0:
-        case 4:
-            writePinHigh(LED1_PIN);
-            break;
-        case 1:
-        case 5:
-            writePinHigh(LED2_PIN);
-            break;
-        case 2:
-        case 6:
-            writePinHigh(LED3_PIN);
-            break;
-        case 3:
-        case 7:
-            writePinHigh(LED1_PIN);
-            writePinHigh(LED2_PIN);
-            writePinHigh(LED3_PIN);
-            break;
-    }
-    return state;
-}
-
-// ----------------------
 // matrix_scan_user: repeated loop
 // ----------------------
 void matrix_scan_user(void) {
-    
     // ------ OS_Switch: select OS layer set ------
     bool new_mode = !readPin(OS_SWITCH_PIN); // HIGH = macOS, LOW = Linux
     if (new_mode != switch_on) {
         switch_on           = new_mode;
         uint8_t target_base = switch_on ? BASE_LAYER_2 : BASE_LAYER_1;
         layer_move(target_base); // activate the correct OS base layer
-    }
-
-    // ------ GUI hold timeout ------
-    if (gui_held && timer_elapsed32(last_tab_time) > GUI_HOLD_TIMEOUT) {
-        unregister_mods(MOD_BIT(KC_LGUI));
-        gui_held = false;
     }
 
     // ------ start slider once ------
@@ -181,29 +133,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // Umlauts
     switch (keycode) {
-        case AUML: send_unicode_string("00E4"); return false;
-        case OUML: send_unicode_string("00F6"); return false;
-        case UUML: send_unicode_string("00FC"); return false;
-        case DSCHAR: send_unicode_string("00DF"); return false;
+        case K0: send_unicode_string("F420"); return false;
+        case K1: send_unicode_string("F421"); return false;
+        case K2: send_unicode_string("F422"); return false;
+        case K3: send_unicode_string("F423"); return false;
+        case K4: send_unicode_string("F493"); return false;
+        case K5: send_unicode_string("F494"); return false;
+        case K6: send_unicode_string("F495"); return false;
+        case K7: send_unicode_string("F496"); return false;
     }
-    // holding tab
-    switch (keycode) {
-        case LGUI(KC_TAB):
-        case LGUI(LSFT(KC_TAB)): {
-            if (!gui_held) {
-                register_mods(MOD_BIT(KC_LGUI)); // hold LGUI
-                gui_held = true;
-            }
-            if (keycode == LGUI(KC_TAB))
-                tap_code(KC_TAB); // forward
-            else {
-                register_mods(MOD_BIT(KC_LSFT)); // hold Shift
-                tap_code(KC_TAB);
-                unregister_mods(MOD_BIT(KC_LSFT));
-            }
-            last_tab_time = timer_read32();
-            return false;
-        }
-    }  
     return true;
 }

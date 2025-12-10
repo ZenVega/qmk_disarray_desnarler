@@ -22,7 +22,7 @@ const int16_t dead_zone = 70;
 #define LED3_PIN 27 // right LED
 
 // ----------------------
-// OS Switch
+// Switch
 // ----------------------
 #define LAYER_SWITCH_PIN GP0
 static bool switch_on = false;
