@@ -52,7 +52,8 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     // --- switch to left
-    [0] = LAYOUT(K0, K1, K2, K3),
+    //[0] = LAYOUT(K0, K1, K2, K3),
+    [0] = LAYOUT(KC_A, KC_B, KC_C, KC_D),
 
     // --- switch to right
     [4] = LAYOUT(K4, K5, K6, K7)
@@ -80,12 +81,16 @@ void matrix_init_user(void) {
     // Initialize OS Switch
     setPinInputHigh(OS_SWITCH_PIN);
 
+    
+
     // Initialize LEDs
     setPinOutput(LED1_PIN);
     setPinOutput(LED2_PIN);
     setPinOutput(LED3_PIN);
 
     initial_blink();
+
+    writePinHigh(LED2_PIN);
 }
 
 // ----------------------
@@ -133,14 +138,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // Umlauts
     switch (keycode) {
-        case K0: send_unicode_string("F420"); return false;
-        case K1: send_unicode_string("F421"); return false;
-        case K2: send_unicode_string("F422"); return false;
-        case K3: send_unicode_string("F423"); return false;
-        case K4: send_unicode_string("F493"); return false;
-        case K5: send_unicode_string("F494"); return false;
-        case K6: send_unicode_string("F495"); return false;
-        case K7: send_unicode_string("F496"); return false;
+        case K0: SEND_STRING("fish"); return false;
+        case K1: SEND_STRING("pufferfish"); return false;
+        case K2: SEND_STRING("turtle"); return false;
+        case K3: SEND_STRING("egg"); return false;
+        case K4: SEND_STRING("ä"); return false;
+        case K5: SEND_STRING("broken_heart"); return false;
+        case K6: SEND_STRING("two_hearts"); return false;
+        case K7: SEND_STRING("sparkling_heart"); return false;
     }
     return true;
 }

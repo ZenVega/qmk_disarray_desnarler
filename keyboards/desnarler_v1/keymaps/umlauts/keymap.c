@@ -179,12 +179,53 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed)
         return true;
 
-    // Umlauts
+    // Umlauts using explicit key presses (dead-key flow): press the diaeresis dead key, then the base letter.
+    // This emulates typing the key combination step-by-step instead of sending strings.
     switch (keycode) {
-        case AUML: send_unicode_string("00E4"); return false;
-        case OUML: send_unicode_string("00F6"); return false;
-        case UUML: send_unicode_string("00FC"); return false;
-        case DSCHAR: send_unicode_string("00DF"); return false;
+        case AUML: {
+            // press dead key (quote key) then 'a' or 'A'
+            tap_code(KC_QUOT);
+            if (get_mods() & MOD_MASK_SHIFT) {
+                register_code(KC_LSFT);
+                tap_code(KC_A);
+                unregister_code(KC_LSFT);
+            } else {
+                tap_code(KC_A);
+            }
+            return false;
+        }
+        case OUML: {
+            tap_code(KC_QUOT);
+            if (get_mods() & MOD_MASK_SHIFT) {
+                register_code(KC_LSFT);
+                tap_code(KC_O);
+                unregister_code(KC_LSFT);
+            } else {
+                tap_code(KC_O);
+            }
+            return false;
+        }
+        case UUML: {
+            tap_code(KC_QUOT);
+            if (get_mods() & MOD_MASK_SHIFT) {
+                register_code(KC_LSFT);
+                tap_code(KC_U);
+                unregister_code(KC_LSFT);
+            } else {
+                tap_code(KC_U);
+            }
+            return false;
+        }
+        case DSCHAR: {
+            // AltGr+S produces 'ß' on German/AltGr layouts — send as explicit key combo
+            bool shifted = get_mods() & MOD_MASK_SHIFT;
+            if (shifted) register_code(KC_LSFT);
+            register_code(KC_RALT);
+            tap_code(KC_S);
+            unregister_code(KC_RALT);
+            if (shifted) unregister_code(KC_LSFT);
+            return false;
+        }
     }
     // holding tab
     switch (keycode) {
