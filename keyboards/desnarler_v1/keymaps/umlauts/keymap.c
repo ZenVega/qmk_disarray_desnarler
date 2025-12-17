@@ -97,7 +97,6 @@ void matrix_init_user(void) {
 // ----------------------
 layer_state_t layer_state_set_user(layer_state_t state) {
     state = update_tri_layer_state(state, 1, 2, 3);
-    state = update_tri_layer_state(state, 5, 6, 7);
 
     uint8_t layer = get_highest_layer(state);
 
@@ -108,19 +107,15 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     switch (layer) {
         case 0:
-        case 4:
             writePinHigh(LED1_PIN);
             break;
         case 1:
-        case 5:
             writePinHigh(LED2_PIN);
             break;
         case 2:
-        case 6:
             writePinHigh(LED3_PIN);
             break;
         case 3:
-        case 7:
             writePinHigh(LED1_PIN);
             writePinHigh(LED2_PIN);
             writePinHigh(LED3_PIN);
@@ -142,6 +137,16 @@ void matrix_scan_user(void) {
         layer_move(target_base); // activate the correct OS base layer
     }
 
+    if (switch_on){
+        writePinHigh(LED1_PIN);
+        writePinLow(LED2_PIN);
+        writePinHigh(LED3_PIN);
+    }
+    else
+        writePinHigh(LED1_PIN);
+        writePinLow(LED2_PIN);
+        writePinLow(LED3_PIN);
+
     // ------ GUI hold timeout ------
     if (gui_held && timer_elapsed32(last_tab_time) > GUI_HOLD_TIMEOUT) {
         unregister_mods(MOD_BIT(KC_LGUI));
@@ -157,7 +162,7 @@ void matrix_scan_user(void) {
 
     // ------ read slider --------
     int16_t raw = analogReadPin(SLIDER_PIN);
-    if (timer_elapsed(last_vol_change) < 100){
+    if (timer_elapsed32(last_vol_change) < 100){
         return ;
     }
    
@@ -169,6 +174,12 @@ void matrix_scan_user(void) {
         tap_code(KC_AUDIO_VOL_UP);
         last_vol_change = timer_read32();
     }
+}
+
+void    umlaut_pressed(void){
+    writePinLow(LED1_PIN);
+    writePinHigh(LED2_PIN);
+    writePinLow(LED3_PIN);
 }
 
 // ----------------------
@@ -183,50 +194,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // This emulates typing the key combination step-by-step instead of sending strings.
     switch (keycode) {
         case AUML: {
-            // press dead key (quote key) then 'a' or 'A'
+            tap_code(KC_RALT);
+            register_code(KC_LSFT);
             tap_code(KC_QUOT);
-            if (get_mods() & MOD_MASK_SHIFT) {
-                register_code(KC_LSFT);
-                tap_code(KC_A);
-                unregister_code(KC_LSFT);
-            } else {
-                tap_code(KC_A);
-            }
+            unregister_code(KC_LSFT); 
+            tap_code(KC_A);
+            umlaut_pressed();
+            
             return false;
         }
         case OUML: {
+            tap_code(KC_RALT);
+            register_code(KC_LSFT);
             tap_code(KC_QUOT);
-            if (get_mods() & MOD_MASK_SHIFT) {
-                register_code(KC_LSFT);
-                tap_code(KC_O);
-                unregister_code(KC_LSFT);
-            } else {
-                tap_code(KC_O);
-            }
+            unregister_code(KC_LSFT); 
+            tap_code(KC_O);
+            umlaut_pressed();
+            
             return false;
         }
         case UUML: {
+            tap_code(KC_RALT);
+            register_code(KC_LSFT);
             tap_code(KC_QUOT);
-            if (get_mods() & MOD_MASK_SHIFT) {
-                register_code(KC_LSFT);
-                tap_code(KC_U);
-                unregister_code(KC_LSFT);
-            } else {
-                tap_code(KC_U);
-            }
+            unregister_code(KC_LSFT); 
+            tap_code(KC_U);
+            umlaut_pressed();
+            
             return false;
         }
         case DSCHAR: {
-            // AltGr+S produces 'ß' on German/AltGr layouts — send as explicit key combo
-            bool shifted = get_mods() & MOD_MASK_SHIFT;
-            if (shifted) register_code(KC_LSFT);
-            register_code(KC_RALT);
+            tap_code(KC_RALT);
             tap_code(KC_S);
-            unregister_code(KC_RALT);
-            if (shifted) unregister_code(KC_LSFT);
+            tap_code(KC_S);
+            umlaut_pressed();
+            
             return false;
         }
     }
+    
     // holding tab
     switch (keycode) {
         case LGUI(KC_TAB):
