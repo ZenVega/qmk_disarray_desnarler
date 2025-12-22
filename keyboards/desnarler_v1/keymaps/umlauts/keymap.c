@@ -45,8 +45,11 @@ enum custom_keycodes {
     AUML = SAFE_RANGE,
     OUML,
     UUML,
-    DSCHAR
+    DSCHAR,
+    CCAP
 };
+
+static bool capitalize = false;
 
 // ----------------------
 // Keymap
@@ -60,7 +63,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [3] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP),
 
     // --- Umlaut Layer
-    [4] = LAYOUT(AUML, OUML, UUML, DSCHAR)
+    [4] = LAYOUT(CCAP, AUML, OUML, UUML)
 };
 
 void initial_blink(void){
@@ -130,15 +133,14 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 void matrix_scan_user(void) {
     
     // ------ OS_Switch: select OS layer set ------
-    bool new_mode = !readPin(OS_SWITCH_PIN); // HIGH = macOS, LOW = Linux
+    bool new_mode = !readPin(OS_SWITCH_PIN);
     if (new_mode != switch_on) {
         switch_on           = new_mode;
         uint8_t target_base = switch_on ? BASE_LAYER_2 : BASE_LAYER_1;
-        layer_move(target_base); // activate the correct OS base layer
-    }
+        layer_move(target_base); }
 
     if (switch_on){
-        writePinLow(LED1_PIN);
+        writePinHigh(LED1_PIN);
         writePinLow(LED2_PIN);
         writePinHigh(LED3_PIN);
     }
@@ -176,6 +178,7 @@ void    umlaut_pressed(void){
     writePinLow(LED1_PIN);
     writePinHigh(LED2_PIN);
     writePinLow(LED3_PIN);
+    wait_ms(100);
 }
 
 // ----------------------
@@ -183,18 +186,28 @@ void    umlaut_pressed(void){
 // ----------------------
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // nothing to register -> just return
-    if (!record->event.pressed)
-        return true;
+    if (!record->event.pressed){
+        capitalize = false;
+        return false;
+    }
 
     // Umlauts using explicit key presses (dead-key flow): press the diaeresis dead key, then the base letter.
     // This emulates typing the key combination step-by-step instead of sending strings.
     switch (keycode) {
+        case CCAP:{
+            capitalize = true;
+            return false;
+        }
         case AUML: {
             tap_code(KC_RALT);
             register_code(KC_LSFT);
             tap_code(KC_QUOT);
-            unregister_code(KC_LSFT); 
+            unregister_code(KC_LSFT);
+            if (capitalize)
+                register_code(KC_LSFT);
             tap_code(KC_A);
+            if (capitalize)
+                unregister_code(KC_LSFT);
             umlaut_pressed();
             
             return false;
@@ -203,8 +216,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code(KC_RALT);
             register_code(KC_LSFT);
             tap_code(KC_QUOT);
-            unregister_code(KC_LSFT); 
+            unregister_code(KC_LSFT);
+            if (capitalize)
+                register_code(KC_LSFT);
             tap_code(KC_O);
+            if (capitalize)
+                unregister_code(KC_LSFT);
             umlaut_pressed();
             
             return false;
@@ -213,8 +230,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code(KC_RALT);
             register_code(KC_LSFT);
             tap_code(KC_QUOT);
-            unregister_code(KC_LSFT); 
+            unregister_code(KC_LSFT);
+            if (capitalize)
+                register_code(KC_LSFT);
             tap_code(KC_U);
+            if (capitalize)
+                unregister_code(KC_LSFT);
             umlaut_pressed();
             
             return false;
