@@ -138,14 +138,10 @@ void matrix_scan_user(void) {
     }
 
     if (switch_on){
-        writePinHigh(LED1_PIN);
+        writePinLow(LED1_PIN);
         writePinLow(LED2_PIN);
         writePinHigh(LED3_PIN);
     }
-    else
-        writePinHigh(LED1_PIN);
-        writePinLow(LED2_PIN);
-        writePinLow(LED3_PIN);
 
     // ------ GUI hold timeout ------
     if (gui_held && timer_elapsed32(last_tab_time) > GUI_HOLD_TIMEOUT) {
