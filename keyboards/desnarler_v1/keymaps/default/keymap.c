@@ -129,12 +129,12 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 // ----------------------
 void matrix_scan_user(void) {
     
-    // ------ OS_Switch: select OS layer set ------
-    bool new_mode = !readPin(LAYER_SWITCH_PIN); // HIGH = macOS, LOW = Linux
+    // ------ OS_Switch: select layer set ------
+    bool new_mode = !readPin(LAYER_SWITCH_PIN); 
     if (new_mode != switch_on) {
         switch_on           = new_mode;
         uint8_t target_base = switch_on ? BASE_LAYER_2 : BASE_LAYER_1;
-        layer_move(target_base); // activate the correct OS base layer
+        layer_move(target_base); // activate the correct base layer
     }
 
     // ------ GUI hold timeout ------
@@ -167,15 +167,15 @@ void matrix_scan_user(void) {
 }
 
 // ----------------------
-// Called on every keypress
+// Called on every keyevent, just handling keypresses
 // ----------------------
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // nothing to register -> just return
+    // nothing pressed
     if (!record->event.pressed)
         return true;
 
     // holding tab
-switch (keycode) {
+    switch (keycode) {
         case LGUI(KC_TAB):
         case LGUI(LSFT(KC_TAB)): {
             if (!gui_held) {
