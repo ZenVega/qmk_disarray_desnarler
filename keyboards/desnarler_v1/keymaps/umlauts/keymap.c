@@ -40,7 +40,9 @@ static uint32_t last_tab_time = 0;
 #define BASE_LAYER_1 0
 #define BASE_LAYER_2 4
 
+// ----------------------
 // custom keys
+// ----------------------
 enum custom_keycodes {
     AUML = SAFE_RANGE,
     OUML,
@@ -133,12 +135,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 // ----------------------
 void matrix_scan_user(void) {
     
-    // ------ OS_Switch: select OS layer set ------
+    // ------ Switch: select layer set ------
     bool new_mode = !readPin(OS_SWITCH_PIN);
     if (new_mode != switch_on) {
         switch_on           = new_mode;
         uint8_t target_base = switch_on ? BASE_LAYER_2 : BASE_LAYER_1;
-        layer_move(target_base); }
+        layer_move(target_base);
+    }
 
     if (switch_on){
         writePinHigh(LED1_PIN);
@@ -186,14 +189,13 @@ void    umlaut_pressed(void){
 // Called on every keypress
 // ----------------------
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // nothing to register -> just return
+    
     if (!record->event.pressed){
         capitalize = false;
         return false;
     }
 
-    // Umlauts using explicit key presses (dead-key flow): press the diaeresis dead key, then the base letter.
-    // This emulates typing the key combination step-by-step instead of sending strings.
+    // typing the key combination step-by-step
     switch (keycode) {
         case CCAP:{
             capitalize = true;
