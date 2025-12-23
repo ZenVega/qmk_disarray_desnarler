@@ -22,9 +22,9 @@ const int16_t dead_zone = 70;
 #define LED3_PIN 27 // right LED
 
 // ----------------------
-// OS Switch
+// Switch
 // ----------------------
-#define OS_SWITCH_PIN GP0
+#define LAYER_SWITCH_PIN GP0
 static bool switch_on = false;
 
 // ----------------------
@@ -45,17 +45,17 @@ static uint32_t last_tab_time = 0;
 // ----------------------
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-    // --- Linux layers 0–4 ---
+    // --- Linux workspace management layers 0–4 ---
     [0] = LAYOUT(MO(1), MO(2), LGUI(LALT(KC_LEFT)), LGUI(LALT(KC_RIGHT))),
     [1] = LAYOUT(_______, MO(2), LGUI(LSFT(LALT(KC_LEFT))), LGUI(LSFT(LALT(KC_RIGHT)))),
     [2] = LAYOUT(MO(1), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
-    [3] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP),
+    [3] = LAYOUT(_______, _______, LGUI(KC_L), KC_SYSTEM_SLEEP),
 
-    // --- macOS layers 4–7 ---
-    [4] = LAYOUT(MO(5), MO(6), LCTL(KC_LEFT), LCTL(KC_RIGHT)),
-    [5] = LAYOUT(_______, MO(6), LCTL(LSFT(KC_LEFT)), LCTL(LSFT(KC_RIGHT))),
-    [6] = LAYOUT(MO(5), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
-    [7] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP)
+  // --- Linux window-management layers (4–7) ---
+    [4] = LAYOUT(MO(5), MO(6), LGUI(KC_LEFT), LGUI(KC_RIGHT)),
+    [5] = LAYOUT(_______, MO(6), LGUI(KC_UP), LGUI(KC_DOWN)),
+    [6] = LAYOUT(MO(5), _______, LGUI(LALT(KC_LEFT)), LGUI(LALT(KC_RIGHT))),
+    [7] = LAYOUT(_______, _______, LGUI(KC_L), KC_SYSTEM_SLEEP),
 };
 
 void initial_blink(void){
@@ -77,7 +77,7 @@ void initial_blink(void){
 // ----------------------
 void matrix_init_user(void) {
     // Initialize OS Switch
-    setPinInputHigh(OS_SWITCH_PIN);
+    setPinInputHigh(LAYER_SWITCH_PIN);
 
     // Initialize LEDs
     setPinOutput(LED1_PIN);
@@ -129,12 +129,12 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 // ----------------------
 void matrix_scan_user(void) {
     
-    // ------ OS_Switch: select OS layer set ------
-    bool new_mode = !readPin(OS_SWITCH_PIN); // HIGH = macOS, LOW = Linux
+    // ------ OS_Switch: select layer set ------
+    bool new_mode = !readPin(LAYER_SWITCH_PIN); 
     if (new_mode != switch_on) {
         switch_on           = new_mode;
         uint8_t target_base = switch_on ? BASE_LAYER_2 : BASE_LAYER_1;
-        layer_move(target_base); // activate the correct OS base layer
+        layer_move(target_base); // activate the correct base layer
     }
 
     // ------ GUI hold timeout ------
@@ -167,15 +167,15 @@ void matrix_scan_user(void) {
 }
 
 // ----------------------
-// Called on every keypress
+// Called on every keyevent, just handling keypresses
 // ----------------------
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // nothing to register -> just return
+    // nothing pressed
     if (!record->event.pressed)
         return true;
 
     // holding tab
-switch (keycode) {
+    switch (keycode) {
         case LGUI(KC_TAB):
         case LGUI(LSFT(KC_TAB)): {
             if (!gui_held) {

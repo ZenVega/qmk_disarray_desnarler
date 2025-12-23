@@ -22,9 +22,9 @@ const int16_t dead_zone = 70;
 #define LED3_PIN 27 // right LED
 
 // ----------------------
-// OS Switch
+// Switch
 // ----------------------
-#define LAYER_SWITCH_PIN GP0
+#define OS_SWITCH_PIN GP0
 static bool switch_on = false;
 
 // ----------------------
@@ -40,23 +40,32 @@ static uint32_t last_tab_time = 0;
 #define BASE_LAYER_1 0
 #define BASE_LAYER_2 4
 
+// custom keys
+enum custom_keycodes {
+    AUML = SAFE_RANGE,
+    OUML,
+    UUML,
+    DSCHAR,
+    CCAP
+};
+
+static bool capitalize = false;
+
 // ----------------------
 // Keymap
 // ----------------------
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-    // --- Linux workspace management layers 0–4 ---
+    // --- Linux layers 0–4 ---
     [0] = LAYOUT(MO(1), MO(2), LGUI(LALT(KC_LEFT)), LGUI(LALT(KC_RIGHT))),
-    [1] = LAYOUT(_______, MO(2), LGUI(LSFT(LALT(KC_LEFT))), LGUI(LSFT(LALT(KC_RIGHT)))),
+    [1] = LAYOUT(MO(1), MO(2), LGUI(LSFT(LALT(KC_LEFT))), LGUI(LSFT(LALT(KC_RIGHT)))),
     [2] = LAYOUT(MO(1), _______, LGUI(KC_TAB), LGUI(LSFT(KC_TAB))),
     [3] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP),
 
-  // --- Linux window-management layers (4–7) ---
-    [4] = LAYOUT(MO(5), MO(6), LGUI(KC_LEFT), LGUI(KC_RIGHT)),
-    [5] = LAYOUT(_______, MO(6), LGUI(KC_UP), LGUI(KC_DOWN)),
-    [6] = LAYOUT(MO(5), _______, LGUI(LALT(KC_LEFT)), LGUI(LALT(KC_RIGHT))),
-    [7] = LAYOUT(_______, _______, LGUI(KC_L), KC_SYSTEM_SLEEP),
+    // --- Umlaut Layer
+    [4] = LAYOUT(AUML, OUML, UUML, DSCHAR)
 };
+
 
 void initial_blink(void){
     for (int i = 0; i < 10; i++) {
@@ -77,7 +86,7 @@ void initial_blink(void){
 // ----------------------
 void matrix_init_user(void) {
     // Initialize OS Switch
-    setPinInputHigh(LAYER_SWITCH_PIN);
+    setPinInputHigh(OS_SWITCH_PIN);
 
     // Initialize LEDs
     setPinOutput(LED1_PIN);
@@ -92,7 +101,6 @@ void matrix_init_user(void) {
 // ----------------------
 layer_state_t layer_state_set_user(layer_state_t state) {
     state = update_tri_layer_state(state, 1, 2, 3);
-    state = update_tri_layer_state(state, 5, 6, 7);
 
     uint8_t layer = get_highest_layer(state);
 
@@ -103,19 +111,15 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     switch (layer) {
         case 0:
-        case 4:
             writePinHigh(LED1_PIN);
             break;
         case 1:
-        case 5:
             writePinHigh(LED2_PIN);
             break;
         case 2:
-        case 6:
             writePinHigh(LED3_PIN);
             break;
         case 3:
-        case 7:
             writePinHigh(LED1_PIN);
             writePinHigh(LED2_PIN);
             writePinHigh(LED3_PIN);
@@ -130,11 +134,16 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 void matrix_scan_user(void) {
     
     // ------ OS_Switch: select OS layer set ------
-    bool new_mode = !readPin(LAYER_SWITCH_PIN); // HIGH = macOS, LOW = Linux
+    bool new_mode = !readPin(OS_SWITCH_PIN);
     if (new_mode != switch_on) {
         switch_on           = new_mode;
         uint8_t target_base = switch_on ? BASE_LAYER_2 : BASE_LAYER_1;
-        layer_move(target_base); // activate the correct OS base layer
+        layer_move(target_base); }
+
+    if (switch_on){
+        writePinHigh(LED1_PIN);
+        writePinLow(LED2_PIN);
+        writePinHigh(LED3_PIN);
     }
 
     // ------ GUI hold timeout ------
@@ -152,7 +161,7 @@ void matrix_scan_user(void) {
 
     // ------ read slider --------
     int16_t raw = analogReadPin(SLIDER_PIN);
-    if (timer_elapsed(last_vol_change) < 100){
+    if (timer_elapsed32(last_vol_change) < 100){
         return ;
     }
    
@@ -166,16 +175,84 @@ void matrix_scan_user(void) {
     }
 }
 
+void    umlaut_pressed(void){
+    writePinLow(LED1_PIN);
+    writePinHigh(LED2_PIN);
+    writePinLow(LED3_PIN);
+    wait_ms(100);
+}
+
 // ----------------------
 // Called on every keypress
 // ----------------------
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // nothing to register -> just return
-    if (!record->event.pressed)
-        return true;
+    if (!record->event.pressed){
+        capitalize = false;
+        return false;
+    }
 
+    // Umlauts using explicit key presses (dead-key flow): press the diaeresis dead key, then the base letter.
+    // This emulates typing the key combination step-by-step instead of sending strings.
+    switch (keycode) {
+        case CCAP:{
+            capitalize = true;
+            return false;
+        }
+        case AUML: {
+            tap_code(KC_RALT);
+            register_code(KC_LSFT);
+            tap_code(KC_QUOT);
+            unregister_code(KC_LSFT);
+            if (capitalize)
+                register_code(KC_LSFT);
+            tap_code(KC_A);
+            if (capitalize)
+                unregister_code(KC_LSFT);
+            umlaut_pressed();
+            
+            return false;
+        }
+        case OUML: {
+            tap_code(KC_RALT);
+            register_code(KC_LSFT);
+            tap_code(KC_QUOT);
+            unregister_code(KC_LSFT);
+            if (capitalize)
+                register_code(KC_LSFT);
+            tap_code(KC_O);
+            if (capitalize)
+                unregister_code(KC_LSFT);
+            umlaut_pressed();
+            
+            return false;
+        }
+        case UUML: {
+            tap_code(KC_RALT);
+            register_code(KC_LSFT);
+            tap_code(KC_QUOT);
+            unregister_code(KC_LSFT);
+            if (capitalize)
+                register_code(KC_LSFT);
+            tap_code(KC_U);
+            if (capitalize)
+                unregister_code(KC_LSFT);
+            umlaut_pressed();
+            
+            return false;
+        }
+        case DSCHAR: {
+            tap_code(KC_RALT);
+            tap_code(KC_S);
+            tap_code(KC_S);
+            umlaut_pressed();
+            
+            return false;
+        }
+    }
+    
     // holding tab
-switch (keycode) {
+    switch (keycode) {
         case LGUI(KC_TAB):
         case LGUI(LSFT(KC_TAB)): {
             if (!gui_held) {
