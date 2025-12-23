@@ -63,8 +63,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [3] = LAYOUT(_______, _______, KC_SYSTEM_SLEEP, KC_SYSTEM_SLEEP),
 
     // --- Umlaut Layer
-    [4] = LAYOUT(CCAP, AUML, OUML, UUML)
+    [4] = LAYOUT(AUML, OUML, UUML, DSCHAR)
 };
+
 
 void initial_blink(void){
     for (int i = 0; i < 10; i++) {
