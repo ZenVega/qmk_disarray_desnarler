@@ -9,8 +9,8 @@
 // ----------------------
 #define SLIDER_PIN 29
 
-static uint32_t last_vol_change = 0;
-static bool slider_ready = false;
+//static uint32_t last_vol_change = 0;
+//static bool slider_ready = false;
 const int16_t center = 512;
 const int16_t dead_zone = 70;
 
@@ -144,11 +144,11 @@ void matrix_scan_user(void) {
     }
 
     // ------ start slider once ------
-    if (!slider_ready){
+    /*if (!slider_ready){
         last_vol_change = timer_read32();
         slider_ready = true;
         return ;
-    }
+    } 
 
     // ------ read slider --------
     int16_t raw = analogReadPin(SLIDER_PIN);
@@ -164,6 +164,7 @@ void matrix_scan_user(void) {
         tap_code(KC_AUDIO_VOL_UP);
         last_vol_change = timer_read32();
     }
+        */
 }
 
 // ----------------------
