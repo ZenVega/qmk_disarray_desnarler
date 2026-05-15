@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disarray Desnarler</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── Header ── -->
+    <header>
+      <div class="header-left">
+        <h1>Disarray Desnarler</h1>
+        <span class="subtitle">Companion App</span>
+      </div>
+      <div class="status-pill" id="status-pill">
+        <span class="status-dot"></span>
+        <span id="status-text">Connecting…</span>
+      </div>
+    </header>
+
+    <!-- ── Main ── -->
+    <main>
+
+      <!-- Left: device visual -->
+      <section class="device-section">
+        <div class="macropad" id="macropad">
+
+          <div class="macropad-header">
+            <span class="device-name">DesktopOrdnungsamt</span>
+            <div class="leds">
+              <div class="led on" id="led-0" title="LED 1"></div>
+              <div class="led"    id="led-1" title="LED 2"></div>
+              <div class="led"    id="led-2" title="LED 3"></div>
+            </div>
+          </div>
+
+          <div class="keys-grid">
+            <button class="key" data-key="F13" id="key-F13">
+              <span class="key-tag">F13</span>
+              <span class="key-label" id="klabel-F13">—</span>
+            </button>
+            <button class="key" data-key="F14" id="key-F14">
+              <span class="key-tag">F14</span>
+              <span class="key-label" id="klabel-F14">—</span>
+            </button>
+            <button class="key" data-key="F15" id="key-F15">
+              <span class="key-tag">F15</span>
+              <span class="key-label" id="klabel-F15">—</span>
+            </button>
+            <button class="key" data-key="F16" id="key-F16">
+              <span class="key-tag">F16</span>
+              <span class="key-label" id="klabel-F16">—</span>
+            </button>
+          </div>
+
+          <div class="slider-row">
+            <svg class="slider-icon" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M9 4a1 1 0 0 0-2 0v.17A3 3 0 0 0 8 10.83V12H6v1h4v-1H8v-1.17A3 3 0 0 0 9 4.17V4z"/>
+            </svg>
+            <div class="slider-track">
+              <div class="slider-fill" id="slider-fill"></div>
+            </div>
+            <span class="slider-hint">vol</span>
+          </div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">L</span>
+            <div class="toggle-switch" id="toggle-switch">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span class="toggle-label">R</span>
+          </div>
+
+        </div>
+        <p class="device-hint">Click a key to configure it</p>
+      </section>
+
+      <!-- Right: key bindings list -->
+      <section class="config-section">
+        <h2>Key Bindings</h2>
+        <div class="key-cards" id="key-cards">
+          <!-- populated by app.js -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── Activity log ── -->
+    <div class="activity-bar">
+      <span class="activity-title">Activity</span>
+      <div class="activity-log" id="activity-log">
+        <span class="activity-empty">No events yet — press a key on your Desnarler</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Edit modal ── -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3 id="modal-title">Edit Key</h3>
+        <button class="modal-close" id="modal-close" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+
+        <label for="edit-label">Label</label>
+        <input id="edit-label" type="text" placeholder="e.g. Spotify" autocomplete="off" />
+
+        <label for="edit-type">Action Type</label>
+        <select id="edit-type">
+          <option value="shell">Shell Command</option>
+          <option value="app">Launch App</option>
+          <option value="url">Open URL</option>
+        </select>
+
+        <label id="edit-value-label" for="edit-value">Command</label>
+        <input id="edit-value" type="text" placeholder="" autocomplete="off" />
+
+        <div class="examples" id="examples">
+          <p class="examples-title">Examples</p>
+          <div class="examples-list" id="examples-list"></div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="modal-cancel">Cancel</button>
+        <button class="btn-primary" id="modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
