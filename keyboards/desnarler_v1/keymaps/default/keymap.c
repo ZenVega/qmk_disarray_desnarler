@@ -9,10 +9,14 @@
 // ----------------------
 #define SLIDER_PIN 29
 
-static uint32_t last_vol_change = 0;
-static bool slider_ready = false;
-const int16_t center = 512;
-const int16_t dead_zone = 70;
+// Volume follows fader *movement*: one volume tap per SLIDER_STEP of
+// travel (1024 / 64 = 16 steps end to end). The step size doubles as
+// hysteresis, so ADC noise never fires a tap and the volume stays put
+// when the fader rests anywhere.
+#define SLIDER_STEP 64
+
+static uint32_t last_slider_read = 0;
+static int16_t  slider_anchor = -1; // raw value at last tap, -1 = uninitialized
 
 // ----------------------
 // LEDs
@@ -26,6 +30,7 @@ const int16_t dead_zone = 70;
 // ----------------------
 #define LAYER_SWITCH_PIN GP0
 static bool switch_on = false;
+static bool switch_synced = false; // force a real read on first scan
 
 // ----------------------
 // helpers to hold tab
@@ -130,8 +135,9 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 void matrix_scan_user(void) {
     
     // ------ OS_Switch: select layer set ------
-    bool new_mode = !readPin(LAYER_SWITCH_PIN); 
-    if (new_mode != switch_on) {
+    bool new_mode = !readPin(LAYER_SWITCH_PIN);
+    if (!switch_synced || new_mode != switch_on) {
+        switch_synced       = true;
         switch_on           = new_mode;
         uint8_t target_base = switch_on ? BASE_LAYER_2 : BASE_LAYER_1;
         layer_move(target_base); // activate the correct base layer
@@ -143,26 +149,25 @@ void matrix_scan_user(void) {
         gui_held = false;
     }
 
-    // ------ start slider once ------
-    if (!slider_ready){
-        last_vol_change = timer_read32();
-        slider_ready = true;
+    // ------ read slider --------
+    if (timer_elapsed32(last_slider_read) < 20){
+        return ;
+    }
+    last_slider_read = timer_read32();
+
+    int16_t raw = analogReadPin(SLIDER_PIN);
+    if (slider_anchor < 0){
+        slider_anchor = raw; // adopt current position at boot, no tap
         return ;
     }
 
-    // ------ read slider --------
-    int16_t raw = analogReadPin(SLIDER_PIN);
-    if (timer_elapsed(last_vol_change) < 100){
-        return ;
-    }
-   
-    if (raw < center - dead_zone){
-        tap_code(KC_AUDIO_VOL_DOWN);
-        last_vol_change = timer_read32();
-    }
-    else if (raw > center + dead_zone){
+    while (raw - slider_anchor >= SLIDER_STEP){
         tap_code(KC_AUDIO_VOL_UP);
-        last_vol_change = timer_read32();
+        slider_anchor += SLIDER_STEP;
+    }
+    while (slider_anchor - raw >= SLIDER_STEP){
+        tap_code(KC_AUDIO_VOL_DOWN);
+        slider_anchor -= SLIDER_STEP;
     }
 }
 
