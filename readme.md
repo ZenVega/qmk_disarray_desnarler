@@ -1,6 +1,6 @@
 this is a fork of the QMK firmware
 
-it also contains the files necessary for the DisArray Desnarler Keyboard
+it also contains the files necessary to flash the "disarray_desnarler" and it's successor "macro_GOAT"
 
 if your want to learn more about the Desnarler and find instructions how to set it up and use it refer to: [repo](https://github.com/ZenVega/disarray_desnarler_docs)
 
@@ -12,11 +12,11 @@ if your want to learn more about the Desnarler and find instructions how to set 
 [![GitHub contributors](https://img.shields.io/github/contributors/qmk/qmk_firmware.svg)](https://github.com/qmk/qmk_firmware/pulse/monthly)
 [![GitHub forks](https://img.shields.io/github/forks/qmk/qmk_firmware.svg?style=social&label=Fork)](https://github.com/qmk/qmk_firmware/)
 
-This is a keyboard firmware based on the [tmk\_keyboard firmware](https://github.com/tmk/tmk_keyboard) with some useful features for Atmel AVR and ARM controllers, and more specifically, the [OLKB product line](https://olkb.com), the [ErgoDox EZ](https://ergodox-ez.com) keyboard, and the Clueboard product line.
+This is a keyboard firmware based on the [tmk_keyboard firmware](https://github.com/tmk/tmk_keyboard) with some useful features for Atmel AVR and ARM controllers, and more specifically, the [OLKB product line](https://olkb.com), the [ErgoDox EZ](https://ergodox-ez.com) keyboard, and the Clueboard product line.
 
 ## Documentation
 
-* [See the official documentation on docs.qmk.fm](https://docs.qmk.fm)
+- [See the official documentation on docs.qmk.fm](https://docs.qmk.fm)
 
 The docs are powered by [VitePress](https://vitepress.dev/). They are also viewable offline; see [Previewing the Documentation](https://docs.qmk.fm/#/contributing?id=previewing-the-documentation) for more details.
 
@@ -24,12 +24,12 @@ You can request changes by making a fork and opening a [pull request](https://gi
 
 ## Supported Keyboards
 
-* [Planck](/keyboards/planck/)
-* [Preonic](/keyboards/preonic/)
-* [ErgoDox EZ](/keyboards/ergodox_ez/)
-* [Clueboard](/keyboards/clueboard/)
-* [Cluepad](/keyboards/clueboard/17/)
-* [Atreus](/keyboards/atreus/)
+- [Planck](/keyboards/planck/)
+- [Preonic](/keyboards/preonic/)
+- [ErgoDox EZ](/keyboards/ergodox_ez/)
+- [Clueboard](/keyboards/clueboard/)
+- [Cluepad](/keyboards/clueboard/17/)
+- [Atreus](/keyboards/atreus/)
 
 The project also includes community support for [lots of other keyboards](/keyboards/).
 
