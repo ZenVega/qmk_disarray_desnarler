@@ -1,0 +1,138 @@
+{
+    "processor": "RP2040",
+    "bootloader": "rp2040",
+    "manufacturer": "zen_vega",
+    "keyboard_name": "macro_goat_v0",
+    "maintainer": "zen_vega",
+    "diode_direction": "COL2ROW",
+    "features": {
+        "bootmagic": true,
+        "extrakey": true,
+        "mousekey": true,
+        "nkro": true,
+        "via": true,
+        "rgblight": true
+    },
+    "ws2812": {
+        "pin": "GP29",
+        "driver": "vendor"
+    },
+    "rgblight": {
+        "led_count": 16,
+        "animations": {
+            "breathing": true,
+            "rainbow_mood": true,
+            "rainbow_swirl": true,
+            "snake": true,
+            "twinkle": true
+        }
+    },
+    "matrix_pins": {
+        "rows": [
+            "GP1",
+            "GP0"
+        ],
+        "cols": [
+            "GP2",
+            "GP3",
+            "GP4",
+            "GP5"
+        ]
+    },
+    "encoder": {
+        "rotary": [
+            {
+                "pin_a": "GP6",
+                "pin_b": "GP7"
+            },
+            {
+                "pin_a": "GP8",
+                "pin_b": "GP9"
+            },
+            {
+                "pin_a": "GP10",
+                "pin_b": "GP11"
+            },
+            {
+                "pin_a": "GP12",
+                "pin_b": "GP13"
+            }
+        ]
+    },
+    "url": "",
+    "usb": {
+        "device_version": "1.0.0",
+        "pid": "0x0001",
+        "vid": "0xFEED"
+    },
+    "layouts": {
+        "LAYOUT": {
+            "layout": [
+                {
+                    "matrix": [
+                        0,
+                        0
+                    ],
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "matrix": [
+                        0,
+                        1
+                    ],
+                    "x": 1,
+                    "y": 0
+                },
+                {
+                    "matrix": [
+                        0,
+                        2
+                    ],
+                    "x": 2,
+                    "y": 0
+                },
+                {
+                    "matrix": [
+                        0,
+                        3
+                    ],
+                    "x": 3,
+                    "y": 0
+                },
+                {
+                    "matrix": [
+                        1,
+                        0
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "matrix": [
+                        1,
+                        1
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "matrix": [
+                        1,
+                        2
+                    ],
+                    "x": 2,
+                    "y": 1
+                },
+                {
+                    "matrix": [
+                        1,
+                        3
+                    ],
+                    "x": 3,
+                    "y": 1
+                }
+            ]
+        }
+    }
+}

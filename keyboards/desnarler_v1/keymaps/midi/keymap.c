@@ -1,4 +1,5 @@
 #include "analog.h"
+#include "qmk_midi.h" // MidiDevice + midi_send_noteon/off (requires MIDI_ENABLE)
 #include QMK_KEYBOARD_H
 // ---------------------
 // Hardware definitions
@@ -8,8 +9,7 @@
 // ---------------------
 // MIDI setup
 // ---------------------
-extern MidiDevice midi_device;    // << required for classic QMK MIDI
-static uint8_t    base_note = 60; // middle C
+static uint8_t base_note  = 60; // middle C (midi_device is declared in qmk_midi.h)
 static bool       midi_mode = false;
 // ---------------------
 // QMK setup
