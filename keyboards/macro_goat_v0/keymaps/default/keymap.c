@@ -16,6 +16,9 @@
 //   * 16 WS2812 LEDs on GP29 ("rgblight", the under/backlight strip)
 //   * 1 WS2812 LED built into the RP2040-Zero board itself (the "power LED",
 //     driven separately by onboard_led.c)
+//   * 5 more GPIO broken out but otherwise unused: GP14, GP15, GP26, GP27,
+//     GP28 (see MACRO_GOAT_PIN_* in config.h for what each one doubles as —
+//     SPI/UART/I2C/ADC — if you want to wire something up)
 //
 // Sections below, in order:
 //   1. Tunables            — timings and brightness for the power LED
