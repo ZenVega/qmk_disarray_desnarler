@@ -92,8 +92,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // order the encoders are declared in keyboard.json (GP6/7, GP8/9, GP10/11,
 // GP12/13). Each keymap layer needs its own row here.
 //
-// Right now all four encoders do the same thing: volume. Handy alternatives:
-//   ENCODER_CCW_CW(KC_MS_WH_UP, KC_MS_WH_DOWN)   scroll wheel
+// As shipped, encoders 1 and 3 control volume and encoders 2 and 4 scroll the
+// mouse wheel. Handy alternatives:
+//   ENCODER_CCW_CW(KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN) volume
 //   ENCODER_CCW_CW(KC_MPRV, KC_MNXT)             track skip
 //   ENCODER_CCW_CW(LCTL(KC_MINS), LCTL(KC_PLUS)) zoom out / in
 //   ENCODER_CCW_CW(KC_LEFT, KC_RGHT)             arrow keys / timeline scrub
@@ -105,10 +106,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     // clang-format off
     [0] = {
-        ENCODER_CCW_CW(KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN),
-        ENCODER_CCW_CW(KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN),
-        ENCODER_CCW_CW(KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN),
-        ENCODER_CCW_CW(KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN),
+        ENCODER_CCW_CW(KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN), // 1: volume
+        ENCODER_CCW_CW(MS_WHLU, MS_WHLD),                   // 2: scroll
+        ENCODER_CCW_CW(KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN), // 3: volume
+        ENCODER_CCW_CW(MS_WHLU, MS_WHLD),                   // 4: scroll
     },
     // clang-format on
 };
